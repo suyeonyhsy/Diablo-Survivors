@@ -99,6 +99,7 @@ jobs:
       - name: Export Android APK
         run: |
           mkdir -p build
+          godot --headless --path Source_Code/runtime --export-debug
           godot --headless --verbose \
             --path Source_Code/runtime \
             --export-debug Android \
