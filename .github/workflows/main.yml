@@ -1,0 +1,44 @@
+
+
+name: Build Diablo Android APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: '4.6.2'
+          include-templates: true
+          use-dotnet: false
+
+      - name: Check original Godot project
+        run: |
+          test -f Source_Code/runtime/project.godot
+          godot --headless --path Source_Code/runtime --editor --quit
+
+      - name: Check Android export configuration
+        run: |
+          test -f Source_Code/runtime/export_presets.cfg
+
+      - name: Export Android APK
+        run: |
+          mkdir -p build
+          godot --headless --path Source_Code/runtime \
+            --export-debug Android \
+            "$GITHUB_WORKSPACE/build/DiabloSurvivors.apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DiabloSurvivors-APK
+          path: build/DiabloSurvivors.apk
+          if-no-files-found: error
