@@ -19,12 +19,19 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-
+          
       - name: Use preinstalled Android SDK
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME"
-          sdkmanager --version
-          yes | sdkmanager --licenses || true
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -f "$SDKMANAGER" ]; then
+            SDKMANAGER="$ANDROID_HOME/cmdline-tools/20.0/bin/sdkmanager"
+          fi
+          "$SDKMANAGER" --version
+          yes | "$SDKMANAGER" --licenses || true
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/cmdline-tools/20.0/bin" >> "$GITHUB_PATH"
+
 
       - name: Install Android packages
         run: |
